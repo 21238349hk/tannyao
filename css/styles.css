@@ -1,58 +1,107 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
+    background: linear-gradient(135deg, #232526, #414345);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     height: 100vh;
-}
-
-.login-container, .chat-container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-input {
-    width: 80%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-button {
-    background-color: #007bff;
+/* チャットコンテナ */
+.chat-container {
+    background: rgba(0, 0, 0, 0.8);
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
     color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
+/* ヘッダー */
+header {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* チャットボックス */
 .chat-box {
-    width: 300px;
-    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    min-height: 200px;
+    padding: 15px;
+    border-radius: 10px;
     overflow-y: auto;
-    background: #fff;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    max-height: 300px;
 }
 
-.chat-input {
+/* メッセージデザイン */
+.message {
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    max-width: 80%;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.bot {
+    background: #4CAF50;
+    color: white;
+    text-align: left;
+    align-self: flex-start;
+}
+
+.user {
+    background: #2196F3;
+    color: white;
+    text-align: right;
+    align-self: flex-end;
+}
+
+/* 入力エリア */
+.input-area {
     display: flex;
     margin-top: 10px;
 }
 
-.chat-input input {
+input {
     flex: 1;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    outline: none;
 }
 
-.chat-input button {
+button {
+    background: #ff9800;
+    color: white;
+    border: none;
+    padding: 12px;
     margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #f57c00;
+}
+
+/* スクロールバーのカスタマイズ */
+.chat-box::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
 }
