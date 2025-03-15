@@ -1,1 +1,123 @@
 push test!
+https://www.sejuku.net/blog/70775
+これをいったん参考にした
+
+GPT
+これでローカルリポジトリからのアップロードが完了しました。
+ここまで終えたのですが、仮にファイルを編集したら、どのようにgitの操作を行なえばいいですか
+ChatGPT:
+ローカルリポジトリのファイルを編集した後、GitHub にアップロード（プッシュ）するための操作手順を説明します。基本的には以下の 3ステップ で行います。
+
+ファイルを編集後のGitの操作手順
+1. 変更を確認する
+ファイルを編集したら、まず どのファイルが変更されたか確認 します。
+
+sh
+コピーする
+編集する
+git status
+出力例（変更がある場合）:
+
+rust
+コピーする
+編集する
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   pushtest.txt
+→ ここで modified: pushtest.txt となっていれば、pushtest.txt を編集したことが確認できます。
+
+2. 変更をステージングエリアに追加
+変更を Git に登録するため、以下のコマンドを実行します。
+
+sh
+コピーする
+編集する
+git add pushtest.txt
+※ すべての変更を一括で追加する場合
+
+sh
+コピーする
+編集する
+git add .
+3. 変更をコミット
+変更を記録するため、コミットメッセージをつけてコミット します。
+
+sh
+コピーする
+編集する
+git commit -m "Updated pushtest.txt"
+※ -m の後に変更内容のメッセージを入れます。
+
+4. 変更を GitHub にプッシュ
+最後に、変更を GitHub にアップロードします。
+
+sh
+コピーする
+編集する
+git push origin main
+（補足）よく使う Git コマンド
+コマンド	説明
+git status	現在の変更状況を確認
+git add <ファイル名>	変更をステージングエリアに追加
+git add .	すべての変更を追加
+git commit -m "メッセージ"	変更をコミット
+git push origin main	GitHub に変更をアップロード
+（例）ファイルを編集後の一連の流れ
+1. pushtest.txt を編集
+ファイルを編集し、保存する。
+
+2. git status で変更を確認
+sh
+コピーする
+編集する
+git status
+→ 変更されたファイルがリストに表示される。
+
+3. 変更を追加
+sh
+コピーする
+編集する
+git add pushtest.txt
+または
+
+sh
+コピーする
+編集する
+git add .
+4. 変更をコミット
+sh
+コピーする
+編集する
+git commit -m "ファイルを編集"
+5. GitHub にプッシュ
+sh
+コピーする
+編集する
+git push origin main
+（オプション）変更を取り消したい場合
+1. git add した変更を取り消す
+sh
+コピーする
+編集する
+git reset HEAD <ファイル名>
+例:
+
+sh
+コピーする
+編集する
+git reset HEAD pushtest.txt
+2. 編集を元に戻す
+sh
+コピーする
+編集する
+git checkout -- <ファイル名>
+例:
+
+sh
+コピーする
+編集する
+git checkout -- pushtest.txt
+これで完璧！🎉
+この流れを覚えれば、ファイルを編集するたびに GitHub にアップロード できます！試してみてください😊
