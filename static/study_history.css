@@ -1,0 +1,99 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    background: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.record-button {
+    display: block;
+    padding: 10px 20px;
+    background: #f39c12;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.record-button:hover {
+    background: #e67e22;
+}
+
+.chat-container {
+    flex: 1;
+    padding: 20px;
+}
+
+.floating-text {
+    text-align: center;
+}
+
+.chat-box {
+    margin-top: 20px;
+}
+
+.input-area {
+    display: flex;
+    margin-top: 20px;
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px;
+}
+
+#send-btn {
+    padding: 10px;
+}
+
+.calendar-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 20px;
+}
+
+.calendar-day {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.calendar-day:hover {
+    background: #f39c12;
+    color: white;
+}
+
+.back-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.back-button:hover {
+    background: #2980b9;
+}

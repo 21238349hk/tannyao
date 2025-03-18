@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン | Chatbot</title>
+    <link rel="stylesheet" href="../static/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>ログイン</h2>
+        <form action="chatbot.html" method="POST">
+            <div class="input-group">
+                <label for="username">ユーザー名</label>
+                <input type="text" id="username" name="username" placeholder="ユーザー名を入力">
+            </div>
+            <div class="input-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" name="password" placeholder="パスワードを入力">
+            </div>
+            <button type="submit">ログイン</button>
+            <p class="register-link">アカウントをお持ちでないですか？ <a href="#">新規登録</a></p>
+        </form>
+    </div>
+</body>
+</html>

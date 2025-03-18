@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>勉強記録カレンダー</title>
+    <link rel="stylesheet" href="../static/study_history.css">
+</head>
+<body>
+    <div class="calendar-container">
+        <h1>📅 勉強記録</h1>
+        <div id="calendar"></div>
+        <a href="{{ url_for('index') }}" class="back-button">⬅ 戻る</a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const calendar = document.getElementById("calendar");
+            const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                let dayDiv = document.createElement("div");
+                dayDiv.classList.add("calendar-day");
+                dayDiv.innerText = i;
+                dayDiv.addEventListener("click", () => alert(`${i}日に勉強しましたか？`));
+                calendar.appendChild(dayDiv);
+            }
+        });
+    </script>
+</body>
+</html>

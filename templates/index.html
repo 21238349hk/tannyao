@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Chatbot</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+
+    <!-- サイドバー -->
+    <div class="sidebar">
+        <a href="{{ url_for('study_history') }}" class="record-button">📅 勉強記録</a>
+        <a href="{{ url_for('statistics') }}" class="sidebar-button">📊 統計ダッシュボード</a>
+    </div>
+
+    <!-- チャットボット -->
+    <div class="chat-container">
+        <header>
+            <h1 class="floating-text">Study Chatbot</h1>
+            <a href="{{ url_for('login') }}" class="login-button">ログイン</a> 
+        </header>
+        <main class="chat-box">
+            <div class="message bot">
+                <p>今日は何を勉強しましたか？</p>
+            </div>
+        </main>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="勉強内容を入力..." />
+            <button id="send-btn">📩</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const title = document.querySelector(".floating-text");
+            const originalText = title.innerText;
+            title.innerHTML = "";
+    
+            function animateText() {
+                title.innerHTML = ""; // テキストをクリア
+                originalText.split("").forEach((char, index) => {
+                    let span = document.createElement("span");
+                    span.innerText = char;
+                    span.style.opacity = "0";
+                    span.style.display = "inline-block";
+                    span.style.transform = "translateY(20px)";
+                    span.style.transition = `opacity 0.5s ease-out ${index * 0.1}s, transform 0.5s ease-out ${index * 0.1}s`;
+                    title.appendChild(span);
+    
+                    // 非同期でアニメーション適用
+                    setTimeout(() => {
+                        span.style.opacity = "1";
+                        span.style.transform = "translateY(0)";
+                    }, 100);
+                });
+    
+                setTimeout(() => {
+                    setTimeout(animateText, 3000); 
+                }, 3000);
+            }
+    
+            animateText();
+        });
+    </script>
+    
+
+</body>
+</html>
