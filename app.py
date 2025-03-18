@@ -54,17 +54,25 @@ def login():
             print(f"error occured: {e}")
             return f"error detail: {e}"
 
-    return render_template('result_login.html')
+    # return render_template('result_login.html')
 
 
 
     return render_template("login.html")
 
+@app.route("/study_history")
+def study_history():
+    return render_template("study_history.html")
+
+@app.route('/statistics')
+def statistics():
+    return render_template('statistics.html')
+
 
 # チャットボッと入力後の遷移画面
-@app.route("/answer")
-def login():
-    return render_template("answer.html")
+### @app.route("/answer")
+### def login():
+    # return render_template("answer.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
