@@ -23,8 +23,13 @@
     <div class="chat-container">
         <header>
             <h1 class="floating-text">Study Chatbot</h1>
-            <a href="{{ url_for('login') }}" class="login-button">ログイン</a> 
+            {% if session["username"] %}
+                <a href="{{ url_for('logout') }}" class="logout-button">ログアウト</a> 
+            {% else %}
+                <a href="{{ url_for('login') }}" class="login-button">ログイン</a> 
+            {% endif %}
         </header>
+        
         <main class="chat-box">
             <div class="message bot">
                 <p>今日は何を勉強しましたか？</p>
@@ -43,7 +48,7 @@
             title.innerHTML = "";
     
             function animateText() {
-                title.innerHTML = ""; // テキストをクリア
+                title.innerHTML = ""; 
                 originalText.split("").forEach((char, index) => {
                     let span = document.createElement("span");
                     span.innerText = char;
@@ -53,7 +58,6 @@
                     span.style.transition = `opacity 0.5s ease-out ${index * 0.1}s, transform 0.5s ease-out ${index * 0.1}s`;
                     title.appendChild(span);
     
-                    // 非同期でアニメーション適用
                     setTimeout(() => {
                         span.style.opacity = "1";
                         span.style.transform = "translateY(0)";

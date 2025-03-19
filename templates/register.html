@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/register.css">
+    <title>Register</title>
+</head>
+<body>
+    <div class="register_container">
+        <h2>新規登録</h2>
+
+        <!-- メッセージ表示部分 -->
+        {% if message %}
+            <div class="message {{ message_type }}">
+                {{ message }}
+            </div>
+        {% endif %}
+
+        <form action="{{ url_for('register') }}" method="POST">
+            <div id="register-box">
+                <label for="username">ユーザー名:</label>
+                <input type="text" id="username" name="username" required>
+                <br>
+                <label for="password">パスワード:</label>
+                <input type="password" id="password" name="password" required>
+                <br>
+                <button type="submit" id="regist">登録</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

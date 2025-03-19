@@ -1,0 +1,21 @@
+## ターミナル
+
+1. mysql -u root -p を実行　（各々パスワードを入力）
+
+2. mysqlが開いたら、いったん別のターミナルを開く
+
+3. 別のターミナルで、python db.pyを実行
+
+4．次に、python create_database.pyを実行
+
+5. 最後に、python auth.pyを実行
+
+6. その跡mysqlを開いているターミナルを開く
+
+7. USE study_chatbot; をmysqlを開いているターミナルに入力
+
+8. show tables;を同じく実行
+
+9．select * from users;を実行してusernameの中にtest_userという名前のユーザーがあれば接続成功
+
+10. python app.pyデ中身確認

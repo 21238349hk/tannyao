@@ -151,6 +151,42 @@ label {
     margin-top: 15px;
     font-size: 20px;
 }
+/* ======= プルダウンメニュー（科目選択） ======= */
+select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    appearance: none;
+    cursor: pointer;
+}
+
+select:hover, select:focus {
+    background: #444;
+}
+
+select option {
+    background: #222;
+    color: white;
+    font-size: 18px;
+}
+
+#custom-subject {
+    display: none;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
 
 input, textarea {
     width: 100%;

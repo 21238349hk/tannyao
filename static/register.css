@@ -1,4 +1,3 @@
-/* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
 body {
@@ -13,7 +12,7 @@ body {
     color: white;
 }
 
-.login-container {
+.register_container {
     background: rgba(0, 0, 0, 0.8);
     padding: 40px;
     width: 400px;
@@ -28,22 +27,20 @@ h2 {
     font-weight: 600;
 }
 
-/* 入力フィールド */
-.input-group {
+#register-box {
     display: flex;
     flex-direction: column;
     gap: 15px;
     text-align: left;
-    margin-top: 20px;
 }
 
-.input-group label {
+#register-box label {
     font-size: 16px;
     font-weight: 500;
-    color: #ff9800;
+    color: #ff9800; 
 }
 
-input {
+#register-box input {
     width: 100%;
     padding: 12px;
     border-radius: 6px;
@@ -55,32 +52,13 @@ input {
     transition: 0.3s ease-in-out;
 }
 
-input::placeholder {
+#register-box input::placeholder {
     color: rgba(255, 255, 255, 0.6);
 }
 
-input:focus {
+#register-box input:focus {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid #ff9800;
-}
-
-/* ログインボタン */
-button {
-    width: 100%;
-    background: #ff9800;
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 6px;
-    font-size: 18px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
-    margin-top: 40px;
-}
-
-button:hover {
-    background: #f57c00;
 }
 
 #regist {
@@ -99,20 +77,4 @@ button:hover {
 #regist:hover {
     background: #f57c00;
     transform: scale(1.05);
-}
-
-/* 登録リンク */
-.register-link {
-    margin-top: 15px;
-    font-size: 14px;
-}
-
-.register-link a {
-    color: #ff9800;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.register-link a:hover {
-    text-decoration: underline;
 }

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>統計ダッシュボード</title>
+    <link rel="stylesheet" href="../static/statistics.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>📊 統計ダッシュボード</h1>
+
+        <div class="chart-section">
+            <h2>📌 科目別の勉強時間</h2>
+            <canvas id="subjectChart"></canvas>
+        </div>
+
+        <div class="chart-section">
+            <h2>📌 日別の勉強時間</h2>
+            <canvas id="dailyChart"></canvas>
+        </div>
+
+        <div class="chart-section">
+            <h2>📌 週別の勉強時間</h2>
+            <canvas id="weeklyChart"></canvas>
+        </div>
+
+        <div class="chart-section">
+            <h2>📌 月別の勉強時間</h2>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="back-button">⬅ 戻る</a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 📌 仮の勉強記録データ
+            let studyRecords = {
+                "2025-3-1": [{ subject: "数学", hours: 2 }, { subject: "英語", hours: 1 }],
+                "2025-3-2": [{ subject: "プログラミング", hours: 3 }],
+                "2025-3-3": [{ subject: "数学", hours: 1.5 }, { subject: "英語", hours: 2 }],
+                "2025-3-4": [{ subject: "プログラミング", hours: 2 }],
+                "2025-3-5": [{ subject: "英語", hours: 1 }],
+            };
+
+            let subjectData = {};
+            let dailyData = {};
+            let weeklyData = {};
+            let monthlyData = {};
+
+            Object.keys(studyRecords).forEach(date => {
+                let [year, month, day] = date.split('-').map(Number);
+                let week = Math.ceil(day / 7); 
+
+                studyRecords[date].forEach(record => {
+                    subjectData[record.subject] = (subjectData[record.subject] || 0) + record.hours;
+
+        
+                    dailyData[date] = (dailyData[date] || 0) + record.hours;
+
+                    weeklyData[`${year}-${month}-Week${week}`] = (weeklyData[`${year}-${month}-Week${week}`] || 0) + record.hours;
+
+                    monthlyData[`${year}-${month}`] = (monthlyData[`${year}-${month}`] || 0) + record.hours;
+                });
+            });
+
+            function createChart(canvasId, labels, data, labelName, backgroundColor) {
+                let ctx = document.getElementById(canvasId).getContext('2d');
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: labelName,
+                            data: data,
+                            backgroundColor: backgroundColor,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            createChart("subjectChart", Object.keys(subjectData), Object.values(subjectData), "科目別の勉強時間", "rgba(75, 192, 192, 0.6)");
+
+            createChart("dailyChart", Object.keys(dailyData), Object.values(dailyData), "日別の勉強時間", "rgba(255, 99, 132, 0.6)");
+
+            createChart("weeklyChart", Object.keys(weeklyData), Object.values(weeklyData), "週別の勉強時間", "rgba(54, 162, 235, 0.6)");
+
+            createChart("monthlyChart", Object.keys(monthlyData), Object.values(monthlyData), "月別の勉強時間", "rgba(255, 206, 86, 0.6)");
+        });
+    </script>
+</body>
+</html>
