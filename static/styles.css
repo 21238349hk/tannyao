@@ -23,18 +23,30 @@ body {
 }
 
 /*この中身は左側のボタンのcss==================================================================================*/
+/* @keyframes fadeUpFloat {
+    from {
+        opacity: 0;
+        transform: translateY(100px) scale(0.95) perspective(500px) rotateY(100deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
+} */
+
 ul {
     padding: 0;
     list-style-type: none;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 
 ul li {
     box-sizing: border-box;
-    width: 25em;  
+    width: 120%;  
     height: 6.0em; 
     font-size: 22px; 
     border-radius: 0.5em;
@@ -46,7 +58,8 @@ ul li {
     cursor: pointer;
     display: flex;
     align-items: center;
-    animation: floatUp 0.8s ease-out forwards;
+    /* opacity: 0; */
+    animation: fadeUpFloat 0.8s ease-out forwards;
 }
 
 ul li:nth-child(1) { animation-delay: 0.2s; }
@@ -78,26 +91,26 @@ ul li:nth-child(odd) {
 }
 
 ul li:nth-child(even) {
-    background: linear-gradient(to right, rgb(225, 240, 205), rgb(125, 240, 156));
+    background: linear-gradient(to right, rgb(125, 240, 156), rgb(209, 246, 159));
     justify-content: flex-end;
-    padding-right: 10%;
+    padding-right: 5%;
     transform: perspective(500px) rotateY(-20deg);
 }
 
 ul li:nth-child(even) a {
     text-align: right;
     justify-content: flex-end;
-    padding-right: 10%;
+    padding-right: 5%;
 }
 
 ul li:nth-child(odd):hover {
     transform: perspective(300px) rotateY(0deg) scale(1.05);
-    padding-left: 7%;
+    text-align: center;
 }
 
 ul li:nth-child(even):hover {
     transform: perspective(300px) rotateY(0deg) scale(1.05);
-    padding-right: 7%;
+    padding-right:20%;
 }
 
 
@@ -272,15 +285,16 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-    .sidebar {
-        width: 200px;
+    .sidebar-menu {
+        width: 40vw; 
     }
     .chat-container {
-        margin-left: 220px;
-        width: 85%;
+        margin-left: 32vw; 
+        width: 60%;
     }
     .sidebar-button, .record-button {
-        width: 180px;
-        font-size: 18px;
+        width: 80%; 
+        font-size: 2.5vw; 
     }
 }
+
