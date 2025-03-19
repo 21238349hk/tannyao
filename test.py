@@ -23,28 +23,37 @@ def speech_to_text_to_gemini():
             model = genai.GenerativeModel('gemini-2.0-flash')
             prompt = (
                 "あなたは教育用AIアシスタントです。\n"
-                "ユーザーは勉強したことを話します。もし間違った知識がある場合は訂正をし、"
-                "ユーザーが話したことについて、以下のフォーマットで応答してください。なお，要約部分では，余計なことは追加せず，ユーザが話した内容に基づいて要約してください\n\n"
+                "ユーザーは今日勉強したことを話します。\n\n"
+                "1. ユーザーの発言から適切な「科目」を特定してください。\n"
+                "2. 仮に，ユーザが発言した内容に誤りがある場合は適切に修正し、正しい情報を提供してください。\n"
+                "3. ユーザーの発言に基づき、以下のフォーマットで整理してください。\n"
+                "   ※要約部分では余計な情報を追加せず、ユーザーの話した内容を簡潔にまとめてください。\n\n"
+                "【出力フォーマット】\n"
+                "科目: [適切な科目]\n"
                 "タイトル: [適切なタイトル]\n"
                 "要約: [簡単な要約]\n\n"
-                "ユーザーの入力:\n" + text
+                f"ユーザーの入力:\n{text}"
             )
+
 
             response = model.generate_content(prompt)
             response_text = response.text
-            print(response.text)
 
-            # タイトルと要約を抽出
+            # 科目，タイトル，要約を抽出
+            subject= ""
             title = ""
             summary = ""
             for line in response_text.split("\n"):
-                if line.startswith("タイトル:"):
-                    title = line.replace("タイトル:", "").strip()
+                if line.startswith("科目:"):
+                    subject = line.replace("科目:", "").strip()
+                elif line.startswith("タイトル"):
+                    title = line.replace("タイトル","").strip()
                 elif line.startswith("要約:"):
                     summary = line.replace("要約:", "").strip()
-
-            print("\n🔹 タイトル:", title)
-            print("📝 要約:", summary)
+            
+            print("\n 科目:", subject)
+            print("タイトル:", title)
+            print("要約:", summary)
 
         except sr.UnknownValueError:
             print("音声を認識できませんでした。")
