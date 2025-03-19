@@ -68,6 +68,65 @@ def study_history():
 def statistics():
     return render_template('statistics.html')
 
+@app.route("/settings", methods=["GET", "POST"])
+def settings():
+    if request.method == "POST":
+        study_goal = request.form.get("study_goal")
+        notifications = request.form.get("notifications")
+        theme = request.form.get("theme")
+
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO user_settings (user_id, daily_study_goal, notifications_enabled, theme)
+            VALUES (1, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE 
+            daily_study_goal = VALUES(daily_study_goal), 
+            notifications_enabled = VALUES(notifications_enabled), 
+            theme = VALUES(theme)
+        """, (study_goal, notifications, theme))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return redirect(url_for("settings"))
+
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM user_settings WHERE user_id = 1")
+    settings = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    return render_template("settings.html", 
+                           study_goal=settings["daily_study_goal"] if settings else 30, 
+                           notifications=settings["notifications_enabled"] if settings else "on",
+                           theme=settings["theme"] if settings else "light")
+
+@app.route("/goals", methods=["GET", "POST"])
+def goals():
+    if request.method == "POST":
+        goal = request.form.get("goal")
+        target_date = request.form.get("target_date")
+
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO study_goals (user_id, goal, target_date, progress) VALUES (1, %s, %s, 0)", (goal, target_date))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return redirect(url_for("goals"))
+
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM study_goals WHERE user_id = 1")
+    goals = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return render_template("goals.html", goals=goals)
+
 
 # チャットボッと入力後の遷移画面
 ### @app.route("/answer")
