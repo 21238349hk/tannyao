@@ -19,3 +19,68 @@
 9．select * from users;を実行してusernameの中にtest_userという名前のユーザーがあれば接続成功
 
 10. python app.pyデ中身確認
+
+※1.のmysqlのターミナル
+
+PS C:\Users\********\*************\ハッカソン_教育キャンプ\tannyao> mysql -u root -p
+Enter password: ********
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> CREATE DATABASE study_chatbot;
+Query OK, 1 row affected (0.42 sec)
+
+mysql> USE study_chatbot;
+Database changed
+mysql> CREATE USER 'study_user'@'localhost' IDENTIFIED BY 'password';
+Query OK, 0 rows affected (0.20 sec)
+
+mysql> GRANT ALL PRIVILEGES ON study_chatbot.* TO 'study_user'@'localhost';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> show tables;
++-------------------------+
+| Tables_in_study_chatbot |
++-------------------------+
+| study_records           |
+| study_stats             |
+| users                   |
++-------------------------+
+3 rows in set (0.07 sec)
+
+mysql> select * from users;
++----+-----------+------------------------------------------------------------------+
+| id | username  | ****************************************                                     |
++----+-----------+------------------------------------------------------------------+
+|  1 | test_user | ***************************************** |
++----+-----------+------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from users;
++----+-----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| id | username  | password                                                                                                         
+                                                  |
++----+-----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|  1 | test_user | ****************************                                                 
+                                                  |
+|  2 | aiueo     | ******************************************* |
++----+-----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+2 rows in set (0.00 sec)
+
+別のターミナル
+
+PS C:\Users\****************\ハッカソン_教育キャンプ\tannyao> python create_database.py
+Success tablses
+PS C:\Users\******************\ハッカソン_教育キャンプ\tannyao> python db.py
+Success study_chatbot's database
+PS C:\Users\*****************\ハッカソン_教育キャンプ\tannyao> python auth.py
+ユーザー test_user を登録しました
+ test_user' login success
