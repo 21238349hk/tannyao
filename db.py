@@ -8,10 +8,20 @@ DB_CONFIG = {
 }
 
 def get_db_connection():
-    return mysql.connector.connect(**DB_CONFIG)
+    print("Attempting to connect to the database...")  # 確認用
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        print("Connection established successfully!")
+        return conn
+    except mysql.connector.Error as e:
+        print(f"Database connection failed: {e}")  # ここでエラーメッセージを取得
+        return None
 
 if __name__ == "__main__":
+    print("Starting program...")
     conn = get_db_connection()
-    if conn.is_connected():
-        print("Success study_chatbot's database")
-    conn.close()
+
+    if conn is None:
+        print("Failed to connect to the database.")
+    else:
+        conn.close()

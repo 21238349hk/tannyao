@@ -20,6 +20,7 @@
 
 10. python app.pyデ中身確認
 
+<<<<<<< Updated upstream
 ※1.のmysqlのターミナル
 
 PS C:\Users\********\*************\ハッカソン_教育キャンプ\tannyao> mysql -u root -p
@@ -84,3 +85,10 @@ Success study_chatbot's database
 PS C:\Users\*****************\ハッカソン_教育キャンプ\tannyao> python auth.py
 ユーザー test_user を登録しました
  test_user' login success
+=======
+CREATE DATABASE study_chatbot;
+USE study_chatbot;
+CREATE USER 'study_user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON study_chatbot.* TO 'study_user'@'localhost';
+FLUSH PRIVILEGES;
+>>>>>>> Stashed changes
