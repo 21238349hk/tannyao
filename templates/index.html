@@ -17,8 +17,7 @@
             <li class="fade-up"><a href="{{ url_for('settings') }}" class="record-button">設定</a></li>
         </ul>
     </div>
-    
-    
+
     <!-- チャットボット -->
     <div class="chat-container">
         <header>
@@ -35,8 +34,11 @@
                 <p>今日は何を勉強しましたか？</p>
             </div>
         </main>
+
+        <!-- 📝 音声入力ボタンを追加 -->
         <div class="input-area">
             <input type="text" id="user-input" placeholder="勉強内容を入力..." />
+            <button id="record-btn">🎤 音声入力</button>  <!-- 🎤 音声入力ボタン -->
             <button id="send-btn">📩</button>
         </div>
     </div>
@@ -46,7 +48,7 @@
             const title = document.querySelector(".floating-text");
             const originalText = title.innerText;
             title.innerHTML = "";
-    
+
             function animateText() {
                 title.innerHTML = ""; 
                 originalText.split("").forEach((char, index) => {
@@ -57,22 +59,57 @@
                     span.style.transform = "translateY(20px)";
                     span.style.transition = `opacity 0.5s ease-out ${index * 0.1}s, transform 0.5s ease-out ${index * 0.1}s`;
                     title.appendChild(span);
-    
+
                     setTimeout(() => {
                         span.style.opacity = "1";
                         span.style.transform = "translateY(0)";
                     }, 100);
                 });
-    
+
                 setTimeout(() => {
                     setTimeout(animateText, 3000); 
                 }, 3000);
             }
-    
+
             animateText();
         });
+
+        // ===  音声認識のスクリプト ===　新たに追加した部分
+        const recordBtn = document.getElementById("record-btn");
+        const inputText = document.getElementById("user-input");
+
+        // ブラウザの音声認識APIを使用
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "ja-JP";  // 日本語に設定
+
+        recordBtn.addEventListener("click", () => {
+            recognition.start();
+            recordBtn.innerText = "🎙️ 聞き取り中...";
+        });
+
+        recognition.onresult = (event) => {
+            const text = event.results[0][0].transcript;
+            inputText.value = text;
+            recordBtn.innerText = "🎤 音声入力";
+
+            // 取得したテキストをFlaskのAPIへ送信
+            fetch("/api/process_audio", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`✅ 保存しました！\n科目: ${data.subject}\nタイトル: ${data.title}\n要約: ${data.summary}`);
+            })
+            .catch(error => console.error("Error:", error));
+        };
+
+        recognition.onerror = (event) => {
+            console.error("音声認識エラー:", event.error);
+            recordBtn.innerText = "🎤 音声入力";
+        };
     </script>
-    
 
 </body>
 </html>

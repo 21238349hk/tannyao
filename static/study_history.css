@@ -293,3 +293,47 @@ button:hover {
         padding: 12px;
     }
 }
+
+/* ======================== 勉強内容表示一覧 ========================新たに追加下部分 */
+.note-item {
+    display: flex;
+    justify-content: space-between; /* 左に内容、右に削除ボタン */
+    align-items: center;
+    background: #333;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 18px;
+    border-left: 5px solid #93e67c;
+    position: relative;
+}
+
+/* 勉強記録のテキスト部分 */
+.note-info {
+    flex-grow: 1; 
+}
+
+/* 削除ボタンのデザイン（適切なサイズに修正） */
+.delete-note-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    width: 40px; 
+    height: 40px;
+    padding: 0;  
+    font-size: 20px;
+    border-radius: 50%; /* ✅ ボタンを円形にする */
+    cursor: pointer;
+    transition: background 0.3s;
+    position: absolute;
+    top: 10px;  /* ✅ 上に配置 */
+    right: 10px; /* ✅ 右端に配置 */
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+}
+
+/* 削除ボタンのホバー時 */
+.delete-note-btn:hover {
+    background: #ff1a1a;
+}

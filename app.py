@@ -6,6 +6,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 from datetime import datetime
 from db import get_db_connection  
+import google.generativeai as genai
+import speech_recognition as sr  # 音声認識
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  
 
@@ -139,10 +142,23 @@ def study_history():
         (user_id,)
     )
     study_records = cursor.fetchall()
+
+    #新しく音声認識の要約データを取得
+
+    cursor.execute(
+        "SELECT id, subject, title, summary, created_at FROM study_notes WHERE user_id = %s ORDER BY created_at DESC",
+        (user_id,)
+    )
+    study_notes = cursor.fetchall()
+
     cursor.close()
     connection.close()
 
-    return render_template("study_history.html", study_records=study_records)
+    return render_template(
+        "study_history.html",
+        study_records=study_records,
+        study_notes = study_notes #新しく追加
+    )
 
 @app.route('/statistics')
 def statistics():
@@ -183,6 +199,109 @@ def goals():
     connection.close()
 
     return render_template("goals.html", goals=goals)
+
+#新たに追加した部分
+# Google Gemini API の設定
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+def index():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("index.html")
+
+@app.route("/api/process_audio", methods=["POST"])
+def process_audio():
+    """フロントエンドから送られた音声テキストを処理し、データベースに保存"""
+    if "user_id" not in session:
+        return jsonify({"error": "ログインしてください"}), 401
+
+    data = request.get_json()
+    user_text = data.get("text", "")
+
+    if not user_text:
+        return jsonify({"error": "テキストがありません"}), 400
+
+    # Gemini API で処理
+    model = genai.GenerativeModel('gemini-2.0-flash')
+    prompt = (
+        "あなたは教育用AIアシスタントです。\n"
+        "ユーザーは今日勉強したことを話します。\n\n"
+        "1. ユーザーの発言から適切な「科目」を特定してください。なお，「英語」,「国語」.「数学」,「プログラミング」,「理科」,「社会」のいづれかに分類すること．\n"
+        "2. 仮に，ユーザが発言した内容に誤りがある場合は適切に修正してください．\n"
+        "3. ユーザーの発言に基づき、以下のフォーマットで整理してください。\n\n"
+        "※要約部分では余計な情報を追加せず、ユーザーの話した内容を簡潔にまとめてください。\n\n"
+        "【出力フォーマット】\n"
+        "科目: [適切な科目]\n"
+        "タイトル: [適切なタイトル]\n"
+        "要約: [簡単な要約]\n\n"
+        f"ユーザーの入力:\n{user_text}"
+    )
+
+    response = model.generate_content(prompt)
+    response_text = response.text
+
+    # 科目、タイトル、要約を抽出
+    subject, title, summary = "", "", ""
+    for line in response_text.split("\n"):
+        if line.startswith("科目:"):
+            subject = line.replace("科目:", "").strip()
+        elif line.startswith("タイトル:"):
+            title = line.replace("タイトル:", "").strip()
+        elif line.startswith("要約:"):
+            summary = line.replace("要約:", "").strip()
+
+    # データベースに保存
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "INSERT INTO study_notes (user_id, subject, title, summary, created_at) VALUES (%s, %s, %s, %s, NOW())",
+            (session["user_id"], subject, title, summary)
+        )
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+    except Exception as e:
+        return jsonify({"error": f"データベース保存エラー: {e}"}), 500
+
+    return jsonify({
+        "subject": subject,
+        "title": title,
+        "summary": summary
+    })
+
+@app.route("/delete_study_note", methods=["POST"]) ## データベースからstudy_noteのデータを削除するエンドポイント
+def delete_study_note():
+    if "user_id" not in session:
+        return jsonify({"success": False, "error": "ログインしてください"}), 401
+
+    data = request.get_json()
+    note_id = data.get("note_id")
+
+    if not note_id:
+        return jsonify({"success": False, "error": "削除するデータが指定されていません"}), 400
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # ユーザーのデータのみ削除できるようにする
+        cursor.execute(
+            "DELETE FROM study_notes WHERE id = %s AND user_id = %s",
+            (note_id, session["user_id"])
+        )
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({"success": True, "message": "データが削除されました！"})
+    except Exception as e:
+        return jsonify({"success": False, "error": f"削除エラー: {e}"}), 500
+
 
 
 # チャットボッと入力後の遷移画面

@@ -58,6 +58,55 @@
                     </li>
                 {% endfor %}
             </ul>
+
+            <!--音声認識の要約データを表示※別途追加部分-->>
+
+            <h3>勉強内容✏</h3>
+            <ul id="study-notes-list">
+                {% for note in study_notes %}
+                    <li class="note-item" data-id="{{ note.id }}">
+                        <div class="note-info">
+                            <strong>科目:</strong> {{ note.subject }} <br>
+                            <strong>タイトル:</strong> {{ note.title }} <br>
+                            <strong>要約:</strong> {{ note.summary }} <br>
+                            <em>保存日時: {{ note.created_at }}</em>
+                        </div>
+                        <button class="delete-note-btn" onclick="deleteStudyNote('{{ note.id }}')">❌</button>
+                    </li>
+                {% endfor %}
+            </ul>
+            
+            
+
+            <!--音声認識の要約データを削除-->>
+
+            <script>
+                async function deleteStudyNote(noteId) {
+                    if (!confirm("本当にこのメモを削除しますか？")) return;
+            
+                    try {
+                        let response = await fetch("/delete_study_note", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ note_id: noteId }),
+                        });
+            
+                        let result = await response.json();
+                        if (result.success) {
+                            alert(result.message);
+                            location.reload(); // ページをリロードして削除を反映
+                        } else {
+                            alert("削除できませんでした: " + result.error);
+                        }
+                    } catch (error) {
+                        console.error("削除エラー:", error);
+                        alert("エラーが発生しました");
+                    }
+                }
+            </script>
+
         </div>
     </div>
 
