@@ -63,6 +63,23 @@ body {
     background: rgb(125, 240, 156);
 }
 
+.goal-form textarea {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    box-sizing: border-box;
+}
+
+.goal-details {
+    text-align: left;
+    flex: 1;
+    margin: 0 10px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+
 /* 目標リストのスタイル */
 .chat-box {
     background: rgba(255, 255, 255, 0.1);

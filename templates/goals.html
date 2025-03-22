@@ -11,34 +11,46 @@
         <header>
             <h1 class="floating-text">🎯 未来の目標</h1>
         </header>
-
-        <form action="{{ url_for('goals') }}" method="POST">
-            <input type="text" name="title" placeholder="目標タイトルを入力" required>
+        <form action="{{ url_for('goals') }}" method="POST" class="goal-form">
+            <input type="text" name="title" placeholder="目標タイトル" required>
             <input type="date" name="deadline" required>
+        
+            <input type="number" name="progress" min="0" max="100" placeholder="進捗率（0〜100）" required style="width: 100px;">
+        
+            <textarea name="memo" rows="2" placeholder="ここまでの進捗などメモ" style="resize: vertical; width: 100%;"></textarea>
+        
             <select name="category">
                 <option value="勉強">勉強</option>
                 <option value="資格">資格</option>
                 <option value="読書">読書</option>
                 <option value="その他">その他</option>
             </select>
+        
             <button type="submit">➕ 追加</button>
         </form>
+        
 
         <div class="chat-box">
             {% for goal in goals %}
                 <div class="message goal">
                     <form action="{{ url_for('update_goal', id=goal.id) }}" method="POST" style="display: inline;">
                         <input type="checkbox" name="done" onchange="this.form.submit()" {% if goal.done %}checked{% endif %}>
-                        <span {% if goal.done %}style="text-decoration: line-through;"{% endif %}>
-                            {{ goal.title }}（期限: {{ goal.deadline }}／カテゴリ: {{ goal.category }}）
-                        </span>
                     </form>
+        
+                    <div class="goal-details">
+                        <strong>{{ goal.title }}</strong><br>
+                        📅 {{ goal.deadline }} ／ 📚 {{ goal.category }}<br>
+                        📊 進捗：{{ goal.progress }}％<br>
+                        📝 メモ：{{ goal.memo }}
+                    </div>
+        
                     <form action="{{ url_for('delete_goal', id=goal.id) }}" method="POST" style="display: inline;">
                         <button type="submit">🗑️</button>
                     </form>
                 </div>
             {% endfor %}
         </div>
+        
     </div>
 </body>
 </html>

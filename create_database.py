@@ -52,12 +52,14 @@ def create_tables():
         goal VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
         target_date DATE NOT NULL,
         category VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+        progress INT DEFAULT 0,
+        memo TEXT,
         done BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
     ''')
-    
+
     conn.commit()
     conn.close()
     print("Success tablses")
