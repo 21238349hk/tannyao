@@ -137,13 +137,16 @@ header {
 
 
 .chat-box {
+    display: flex;
+    flex-direction: column;
     background: rgba(255, 255, 255, 0.1);
-    min-height: 250px;
-    max-height: 400px;
+    min-height: 600px;
+    max-height: 800px;
     padding: 15px;
     border-radius: 10px;
     overflow-y: auto;
 }
+
 
 
 .message {
@@ -157,10 +160,29 @@ header {
 }
 
 .bot {
-    color: white;
+    background-color: #dcf8c6; 
+    color: black;
     text-align: left;
     align-self: flex-start;
+    padding: 10px 14px;
+    border-radius: 15px 15px 15px 0;
+    margin: 8px 0;
+    max-width: 80%;
+    word-wrap: break-word;
 }
+
+
+.welcome-message {
+    margin-top: 5px; 
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    padding: 0;
+}
+
+
+
 
 .user {
     background: #2196F3;
@@ -245,7 +267,7 @@ button:hover {
 }
 
 .calendar-container {
-    width: 90%;
+    width: auto;
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;

@@ -206,8 +206,9 @@ def process_audio():
         "あなたは教育用AIアシスタントです。\n"
         "ユーザーは今日勉強したことを話します。\n\n"
         "1. ユーザーの発言から適切な「科目」を特定してください。なお，「英語」,「国語」.「数学」,「プログラミング」,「理科」,「社会」のいづれかに分類すること．\n"
-        "2. 仮に，ユーザが発言した内容に誤りがある場合は適切に修正してください．\n"
-        "3. ユーザーの発言に基づき、以下のフォーマットで整理してください。\n\n"
+        "2. 仮に，ユーザが発言した内容に誤りがある場合は適切に修正し,ユーザに知らせてください\n"
+        "3. ユーザーの発言に基づき、以下のフォーマットで整理してください。なお，内容を修正した場合は修正内容をフォーマットにいれること\n\n"
+        "4. ユーザが勉強したことではなく，日常会話をした場合はそのまま会話をしてください"
         "※要約部分では余計な情報を追加せず、ユーザーの話した内容を簡潔にまとめてください。\n\n"
         "【出力フォーマット】\n"
         "科目: [適切な科目]\n"
@@ -218,6 +219,9 @@ def process_audio():
 
     response = model.generate_content(prompt)
     response_text = response.text
+    print(response_text)
+
+    chat_part = response_text.split("【出力フォーマット】")[0].strip()
 
     # 科目、タイトル、要約を抽出
     subject, title, summary = "", "", ""
@@ -229,26 +233,31 @@ def process_audio():
         elif line.startswith("要約:"):
             summary = line.replace("要約:", "").strip()
 
+    print(repr(subject))
+
+
     # データベースに保存
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor()
+    if subject.strip() in ["英語", "国語", "数学", "プログラミング", "理科", "社会"]:
+        try:
+            connection = get_db_connection()
+            cursor = connection.cursor()
 
-        cursor.execute(
-            "INSERT INTO study_notes (user_id, subject, title, summary, created_at) VALUES (%s, %s, %s, %s, NOW())",
-            (session["user_id"], subject, title, summary)
-        )
-        connection.commit()
+            cursor.execute(
+                "INSERT INTO study_notes (user_id, subject, title, summary, created_at) VALUES (%s, %s, %s, %s, NOW())",
+                (session["user_id"], subject, title, summary)
+            )
+            connection.commit()
 
-        cursor.close()
-        connection.close()
-    except Exception as e:
-        return jsonify({"error": f"データベース保存エラー: {e}"}), 500
+            cursor.close()
+            connection.close()
+        except Exception as e:
+            return jsonify({"error": f"データベース保存エラー: {e}"}), 500
 
     return jsonify({
         "subject": subject,
         "title": title,
-        "summary": summary
+        "summary": summary,
+        "full_response": chat_part
     })
 
 @app.route("/delete_study_note", methods=["POST"]) ## データベースからstudy_noteのデータを削除するエンドポイント

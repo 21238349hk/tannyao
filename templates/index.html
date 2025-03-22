@@ -27,13 +27,15 @@
             {% else %}
                 <a href="{{ url_for('login') }}" class="login-button">ログイン</a> 
             {% endif %}
+
+            <main class="chat-box">
+                <div class="message bot first-message">
+                    <p>今日は何を勉強しましたか？</p>
+                </div>
+            </main>
         </header>
         
-        <main class="chat-box">
-            <div class="message bot">
-                <p>今日は何を勉強しましたか？</p>
-            </div>
-        </main>
+
 
         <!-- 📝 音声入力ボタンを追加 -->
         <div class="input-area">
@@ -91,6 +93,13 @@
             inputText.value = text;
             recordBtn.innerText = "🎤 音声入力";
 
+            // チャットボックスにユーザーの発言を追加
+            const chatBox = document.querySelector(".chat-box");
+            const userMessage = document.createElement("div");
+            userMessage.className = "message user";
+            userMessage.innerText = text;
+            chatBox.appendChild(userMessage);
+
             // 取得したテキストをFlaskのAPIへ送信
             fetch("/api/process_audio", {
                 method: "POST",
@@ -99,10 +108,35 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert(`✅ 保存しました！\n科目: ${data.subject}\nタイトル: ${data.title}\n要約: ${data.summary}`);
+                console.log("AIの全応答:", data.full_response);
+                const chatBox = document.querySelector(".chat-box");
+
+                let botText = "";
+                if (data.full_response) {
+                    const formattedIndex = data.full_response.indexOf("【出力フォーマット】");
+                    if (formattedIndex !== -1) {
+                        botText = data.full_response.substring(0, formattedIndex).trim();
+                    } else {
+                        botText = data.full_response.trim(); 
+                    }
+
+                    if (botText) {
+                        const botMessage = document.createElement("div");
+                        botMessage.className = "message bot";
+                        botMessage.innerHTML = `<p>${botText}</p>`;
+                        chatBox.appendChild(botMessage);
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
+                }
+
+                if(data.subject && data.subject.trim() !== ""){
+                    alert(`✅ 保存しました！\n科目: ${data.subject}\nタイトル: ${data.title}\n要約: ${data.summary}`);
+                }
             })
             .catch(error => console.error("Error:", error));
         };
+
+
 
         recognition.onerror = (event) => {
             console.error("音声認識エラー:", event.error);
