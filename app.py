@@ -176,29 +176,7 @@ def settings():
 
     return render_template('settings.html')
 
-@app.route("/goals", methods=["GET", "POST"])
-def goals():
-    if request.method == "POST":
-        goal = request.form.get("goal")
-        target_date = request.form.get("target_date")
 
-        connection = get_db_connection()
-        cursor = connection.cursor()
-        cursor.execute("INSERT INTO study_goals (user_id, goal, target_date, progress) VALUES (1, %s, %s, 0)", (goal, target_date))
-        connection.commit()
-        cursor.close()
-        connection.close()
-
-        return redirect(url_for("goals"))
-
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM study_goals WHERE user_id = 1")
-    goals = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    return render_template("goals.html", goals=goals)
 
 #新たに追加した部分
 # Google Gemini API の設定
@@ -302,8 +280,79 @@ def delete_study_note():
     except Exception as e:
         return jsonify({"success": False, "error": f"削除エラー: {e}"}), 500
 
+@app.route("/goals", methods=["GET", "POST"])#未来の目標
+def goals():
+    if "user_id" not in session:
+        flash("ログインしてください", "error")
+        return redirect(url_for("login"))
 
+    user_id = session["user_id"]
 
+    if request.method == "POST":
+        title = request.form.get("title")
+        deadline = request.form.get("deadline")
+        category = request.form.get("category")
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO study_goals (user_id, goal, target_date, category, done)
+            VALUES (%s, %s, %s, %s, FALSE)
+        """, (user_id, title, deadline, category))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return redirect(url_for("goals"))
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM study_goals WHERE user_id = %s ORDER BY target_date", (user_id,))
+    goals = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return render_template("goals.html", goals=goals)
+
+@app.route("/update_goal/<int:id>", methods=["POST"])
+def update_goal(id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    user_id = session["user_id"]
+
+    done = 'done' in request.form  # チェックボックスのON/OFF
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "UPDATE study_goals SET done = %s WHERE id = %s AND user_id = %s",
+        (done, id, user_id)
+    )
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return redirect(url_for("goals"))
+
+@app.route("/delete_goal/<int:id>", methods=["POST"])
+def delete_goal(id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    user_id = session["user_id"]
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "DELETE FROM study_goals WHERE id = %s AND user_id = %s",
+        (id, user_id)
+    )
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return redirect(url_for("goals"))
 
 
 

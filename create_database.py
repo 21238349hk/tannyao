@@ -44,7 +44,20 @@ def create_tables():
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
     ''')
-
+    ## 🎯 未来の目標テーブルを追加
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS study_goals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        goal VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+        target_date DATE NOT NULL,
+        category VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+        done BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+    ''')
+    
     conn.commit()
     conn.close()
     print("Success tablses")
