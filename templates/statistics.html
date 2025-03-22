@@ -11,24 +11,26 @@
     <div class="dashboard-container">
         <h1>📊 統計ダッシュボード</h1>
 
-        <div class="chart-section">
-            <h2>📌 科目別の勉強時間</h2>
-            <canvas id="subjectChart"></canvas>
-        </div>
+        <div class="chart-grid">
+            <div class="chart-section">
+                <h2>📌 今週の科目別勉強時間</h2>
+                <canvas id="subjectChart"></canvas>
+            </div>
 
-        <div class="chart-section">
-            <h2>📌 日別の勉強時間</h2>
-            <canvas id="dailyChart"></canvas>
-        </div>
+            <div class="chart-section">
+                <h2>📌 週別勉強時間（直近5週間）</h2>
+                <canvas id="weeklyChart"></canvas>
+            </div>
 
-        <div class="chart-section">
-            <h2>📌 週別の勉強時間</h2>
-            <canvas id="weeklyChart"></canvas>
-        </div>
+            <div class="chart-section">
+                <h2>📌 月別勉強時間（直近5ヶ月）</h2>
+                <canvas id="monthlyChart"></canvas>
+            </div>
 
-        <div class="chart-section">
-            <h2>📌 月別の勉強時間</h2>
-            <canvas id="monthlyChart"></canvas>
+            <div class="chart-section">
+                <h2>📌 全期間の科目別割合</h2>
+                <canvas id="overallPieChart"></canvas>
+            </div>
         </div>
 
         <a href="{{ url_for('index') }}" class="back-button">⬅ 戻る</a>
@@ -36,65 +38,93 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // 📌 仮の勉強記録データ
-            let studyRecords = {
-                "2025-3-1": [{ subject: "数学", hours: 2 }, { subject: "英語", hours: 1 }],
-                "2025-3-2": [{ subject: "プログラミング", hours: 3 }],
-                "2025-3-3": [{ subject: "数学", hours: 1.5 }, { subject: "英語", hours: 2 }],
-                "2025-3-4": [{ subject: "プログラミング", hours: 2 }],
-                "2025-3-5": [{ subject: "英語", hours: 1 }],
-            };
+            const studyRecords = {{ study_records | tojson }};
 
-            let subjectData = {};
-            let dailyData = {};
-            let weeklyData = {};
-            let monthlyData = {};
+            const today = new Date();
+            const thisWeekStart = new Date(today.setDate(today.getDate() - today.getDay())); // 日曜日始まり
 
-            Object.keys(studyRecords).forEach(date => {
-                let [year, month, day] = date.split('-').map(Number);
-                let week = Math.ceil(day / 7); 
+            let thisWeekSubjects = {};
+            let weeklyTotals = {};
+            let monthlyTotals = {};
+            let overallSubjects = {};
 
-                studyRecords[date].forEach(record => {
-                    subjectData[record.subject] = (subjectData[record.subject] || 0) + record.hours;
+            studyRecords.forEach(record => {
+                const date = new Date(record.date);
+                const subject = record.subject;
+                const hours = parseFloat(record.hours);
 
-        
-                    dailyData[date] = (dailyData[date] || 0) + record.hours;
+                // 今週のデータ
+                if (date >= thisWeekStart) {
+                    thisWeekSubjects[subject] = (thisWeekSubjects[subject] || 0) + hours;
+                }
 
-                    weeklyData[`${year}-${month}-Week${week}`] = (weeklyData[`${year}-${month}-Week${week}`] || 0) + record.hours;
+                // 週別キー：yyyy-Wxx
+                const weekYear = date.getFullYear();
+                const weekMonth = date.getMonth() + 1;
+                const weekKey = `${weekYear}-${String(weekMonth).padStart(2, '0')}-W${Math.ceil(date.getDate() / 7)}`;
+                weeklyTotals[weekKey] = (weeklyTotals[weekKey] || 0) + hours;
 
-                    monthlyData[`${year}-${month}`] = (monthlyData[`${year}-${month}`] || 0) + record.hours;
-                });
+                // 月別キー
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                monthlyTotals[monthKey] = (monthlyTotals[monthKey] || 0) + hours;
+
+                // 全期間科目集計
+                overallSubjects[subject] = (overallSubjects[subject] || 0) + hours;
             });
 
-            function createChart(canvasId, labels, data, labelName, backgroundColor) {
-                let ctx = document.getElementById(canvasId).getContext('2d');
-                new Chart(ctx, {
-                    type: "bar",
+            // 最新順にソート＆5件取得
+            function getRecentKeys(data, count) {
+                return Object.keys(data).sort().slice(-count);
+            }
+
+            function createBarChart(canvasId, labels, data, labelText, color) {
+                new Chart(document.getElementById(canvasId), {
+                    type: 'bar',
                     data: {
-                        labels: labels,
+                        labels,
                         datasets: [{
-                            label: labelName,
-                            data: data,
-                            backgroundColor: backgroundColor,
-                            borderWidth: 1
+                            label: labelText,
+                            data,
+                            backgroundColor: color
                         }]
                     },
                     options: {
                         responsive: true,
                         scales: {
-                            y: { beginAtZero: true }
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
                 });
             }
 
-            createChart("subjectChart", Object.keys(subjectData), Object.values(subjectData), "科目別の勉強時間", "rgba(75, 192, 192, 0.6)");
+            function createPieChart(canvasId, labels, data) {
+                new Chart(document.getElementById(canvasId), {
+                    type: 'pie',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data,
+                            backgroundColor: ['#4CAF50', '#FF9800', '#2196F3', '#9C27B0', '#FF5722', '#00BCD4']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                    }
+                });
+            }
 
-            createChart("dailyChart", Object.keys(dailyData), Object.values(dailyData), "日別の勉強時間", "rgba(255, 99, 132, 0.6)");
+            // グラフ描画
+            createBarChart("subjectChart", Object.keys(thisWeekSubjects), Object.values(thisWeekSubjects), "今週の勉強時間", "#42a5f5");
 
-            createChart("weeklyChart", Object.keys(weeklyData), Object.values(weeklyData), "週別の勉強時間", "rgba(54, 162, 235, 0.6)");
+            const weeklyKeys = getRecentKeys(weeklyTotals, 5);
+            createBarChart("weeklyChart", weeklyKeys, weeklyKeys.map(k => weeklyTotals[k]), "週別勉強時間", "#66bb6a");
 
-            createChart("monthlyChart", Object.keys(monthlyData), Object.values(monthlyData), "月別の勉強時間", "rgba(255, 206, 86, 0.6)");
+            const monthlyKeys = getRecentKeys(monthlyTotals, 5);
+            createBarChart("monthlyChart", monthlyKeys, monthlyKeys.map(k => monthlyTotals[k]), "月別勉強時間", "#ffa726");
+
+            createPieChart("overallPieChart", Object.keys(overallSubjects), Object.values(overallSubjects));
         });
     </script>
 </body>
