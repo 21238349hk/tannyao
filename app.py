@@ -160,13 +160,27 @@ def study_history():
         study_notes = study_notes #新しく追加
     )
 
-@app.route('/statistics')
+@app.route("/statistics")
 def statistics():
     if "user_id" not in session:
-        flash("ログインしてください", "error")
         return redirect(url_for("login"))
 
-    return render_template('statistics.html')
+    user_id = session["user_id"]
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT date, subject, hours FROM study_records
+        WHERE user_id = %s
+        ORDER BY date ASC
+    """, (user_id,))
+    records = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return render_template("statistics.html", study_records=records)
+
 
 @app.route("/settings", methods=["GET", "POST"])
 def settings():
@@ -175,8 +189,6 @@ def settings():
         return redirect(url_for("login"))
 
     return render_template('settings.html')
-
-
 
 #新たに追加した部分
 # Google Gemini API の設定
@@ -301,13 +313,16 @@ def goals():
         title = request.form.get("title")
         deadline = request.form.get("deadline")
         category = request.form.get("category")
+        progress = request.form.get("progress", 0)
+        memo = request.form.get("memo", "")
+
 
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("""
-            INSERT INTO study_goals (user_id, goal, target_date, category, done)
-            VALUES (%s, %s, %s, %s, FALSE)
-        """, (user_id, title, deadline, category))
+            INSERT INTO study_goals (user_id, goal, target_date, category, progress, memo, done)
+            VALUES (%s, %s, %s, %s, %s, %s, FALSE)
+        """, (user_id, title, deadline, category, progress, memo))
         connection.commit()
         cursor.close()
         connection.close()
@@ -316,7 +331,7 @@ def goals():
 
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM study_goals WHERE user_id = %s ORDER BY target_date", (user_id,))
+    cursor.execute("SELECT goal AS title, target_date AS deadline, category, progress, memo, done, id FROM study_goals WHERE user_id = %s", (user_id,))
     goals = cursor.fetchall()
     cursor.close()
     connection.close()
