@@ -182,13 +182,7 @@ def statistics():
     return render_template("statistics.html", study_records=records)
 
 
-@app.route("/settings", methods=["GET", "POST"])
-def settings():
-    if "user_id" not in session:
-        flash("ログインしてください", "error")
-        return redirect(url_for("login"))
 
-    return render_template('settings.html')
 
 #新たに追加した部分
 # Google Gemini API の設定
@@ -378,6 +372,50 @@ def delete_goal(id):
 
     return redirect(url_for("goals"))
 
+@app.route("/settings", methods=["GET", "POST"])#設定
+def settings():
+    if "user_id" not in session:
+        flash("ログインしてください", "error")
+        return redirect(url_for("login"))
+
+    user_id = session["user_id"]
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    if request.method == "POST":
+        study_goal = request.form.get("study_goal", type=int)
+        notifications = request.form.get("notifications")
+        theme = request.form.get("theme")
+        font_size = request.form.get("font_size")
+        language = request.form.get("language")
+
+        cursor.execute("SELECT user_id FROM user_settings WHERE user_id = %s", (user_id,))
+        existing = cursor.fetchone()
+
+        if existing:
+            cursor.execute("""
+                UPDATE user_settings
+                SET study_goal=%s, notifications=%s, theme=%s, font_size=%s, language=%s
+                WHERE user_id=%s
+            """, (study_goal, notifications, theme, font_size, language, user_id))
+        else:
+            cursor.execute("""
+                INSERT INTO user_settings (user_id, study_goal, notifications, theme, font_size, language)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (user_id, study_goal, notifications, theme, font_size, language))
+
+        connection.commit()
+        flash("✅ 設定を保存しました", "success")
+        return redirect(url_for("settings"))
+
+    # GET：現在の設定を読み込み
+    cursor.execute("SELECT * FROM user_settings WHERE user_id = %s", (user_id,))
+    settings = cursor.fetchone() or {}
+
+    cursor.close()
+    connection.close()
+
+    return render_template("settings.html", **settings)
 
 
 # チャットボッと入力後の遷移画面

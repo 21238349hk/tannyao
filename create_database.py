@@ -59,6 +59,19 @@ def create_tables():
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
     ''')
+    
+## 🎯 設定テーブルを追加
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user_settings (
+    user_id INT PRIMARY KEY,
+    study_goal INT DEFAULT 0,
+    notifications ENUM('on', 'off') DEFAULT 'on',
+    theme ENUM('light', 'dark') DEFAULT 'light',
+    font_size ENUM('small', 'medium', 'large') DEFAULT 'medium',
+    language ENUM('ja', 'en') DEFAULT 'ja',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+    ''')
 
     conn.commit()
     conn.close()
